@@ -50,6 +50,6 @@
         </div>
     </form>
     <p>
-        use asd@gmail.com with password 12345678 for registering, and AFTER that, logging in
+        use asd, asd@gmail.com with password 12345678 for registering, and AFTER that, logging in
     </p>
 </x-guest-layout>
