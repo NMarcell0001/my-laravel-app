@@ -15,8 +15,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 RUN a2enmod rewrite
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-ENV NODE_ENV=production
-ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Update Apache configs for new DocumentRoot
 RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
@@ -39,7 +37,9 @@ COPY . .
 # Install PHP dependencies (artisan is now present)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Build frontend assets
+RUN rm -rf node_modules package-lock.json
+RUN npm cache clean --force
+RUN npm install
 RUN npm run build
 
 # Cache Laravel config/routes/views
