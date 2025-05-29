@@ -9,7 +9,7 @@ Route::get('/', function () {
     if (Auth::check()) {
         return redirect()->route('dashboard');
     }
-    return redirect()->route('login');
+    return redirect()->route('register');
 });
 
 Route::middleware('auth')->group(function () {
@@ -27,10 +27,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-
-use Illuminate\Support\Facades\Artisan;
-
-Route::get('/run-migrations', function () {
-    Artisan::call('migrate', ['--force' => true]);
-    return 'Migrations have been run successfully!';
-});
