@@ -27,23 +27,27 @@ WORKDIR /var/www/html
 # Copy Composer binary from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy app files early to run composer & npm commands
-COPY . .
+# Copy only composer and npm dependency files first (to leverage Docker cache)
+COPY composer.json composer.lock package.json package-lock.json ./
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
+# Install Node.js dependencies and build assets
 RUN npm install \
- && ls -la node_modules/.bin \
- && ./node_modules/.bin/vite --version \
- && npm run build
+    && ls -la node_modules/.bin \
+    && ./node_modules/.bin/vite --version \
+    && npm run build
+
+# Now copy the rest of your application files
+COPY . .
 
 # Cache Laravel config/routes/views
 RUN php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
 
-# Fix permissions for storage and bootstrap cache
+# Fix permissions for storage and bootstrap cache directories
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
