@@ -1,5 +1,6 @@
 FROM php:8.2-apache
 
+# Install dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev zip curl libpq-dev libonig-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_pgsql zip bcmath xml
@@ -8,29 +9,38 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
+# Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 ENV NODE_ENV=production
 
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Fix Apache configs for new DocumentRoot
+RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
+    && sed -ri -e "s!/var/www/!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 WORKDIR /var/www/html
 
-COPY . .
+# Copy composer files first (cache optimization)
+COPY composer.json composer.lock ./
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-RUN npm install
-RUN npm run build || (cat vite.config.js && echo "Vite build failed" && exit 1)
+# Copy the rest of the app
+COPY . .
 
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+# Install node packages & build assets
+RUN npm ci --omit=dev && npm run build || (cat vite.config.js && echo "Vite build failed" && exit 1)
 
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Prepare Laravel cache directories & cache config/routes/views
+RUN mkdir -p storage/framework/cache data bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# Fix permissions for storage and bootstrap cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
