@@ -21,10 +21,10 @@ RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-av
 
 WORKDIR /var/www/html
 
-# Copy composer files first (cache optimization)
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 # Copy the rest of the app
