@@ -33,8 +33,10 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Install node modules and build assets
-RUN npm install && npm run build
+RUN npm install \
+ && ls -la node_modules/.bin \
+ && ./node_modules/.bin/vite --version \
+ && npm run build
 
 # Cache Laravel config/routes/views
 RUN php artisan config:cache \
