@@ -28,3 +28,9 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/run-migrations', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return 'Migrations have been run successfully!';
+});
