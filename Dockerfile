@@ -25,21 +25,19 @@ WORKDIR /var/www/html
 # Copy Composer binary
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy dependency files first (for caching)
+# Copy dependency files first
 COPY composer.json composer.lock package.json package-lock.json ./
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Install Node dependencies (fresh install)
-RUN rm -rf node_modules package-lock.json \
-    && npm cache clean --force \
-    && npm install
-
-# Copy the rest of the app (artisan, config, routes, etc.)
+# Now copy the rest of the app (includes artisan, config, routes, etc.)
 COPY . .
 
-# Build assets
+# Install PHP dependencies (artisan is now present)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+RUN rm -rf node_modules package-lock.json
+RUN npm cache clean --force
+RUN npm install
 RUN npm run build
 
 # Cache Laravel config/routes/views
@@ -47,7 +45,7 @@ RUN php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
 
-# Fix permissions for Laravel storage and cache
+# Fix permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
