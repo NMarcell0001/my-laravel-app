@@ -24,30 +24,30 @@ RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-av
 
 WORKDIR /var/www/html
 
-# Copy Composer binary from official image
+# Copy Composer binary
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy only composer and npm dependency files first (to leverage Docker cache)
+# Copy dependency files first
 COPY composer.json composer.lock package.json package-lock.json ./
 
-# Install PHP dependencies
+# Install Node dependencies early to cache layers
+RUN npm install
+
+# Now copy the rest of the app (includes artisan, config, routes, etc.)
+COPY . .
+
+# Install PHP dependencies (artisan is now present)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Install Node.js dependencies and build assets
-RUN npm install \
-    && ls -la node_modules/.bin \
-    && ./node_modules/.bin/vite --version \
-    && npm run build
-
-# Now copy the rest of your application files
-COPY . .
+# Build frontend assets
+RUN npm run build
 
 # Cache Laravel config/routes/views
 RUN php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
 
-# Fix permissions for storage and bootstrap cache directories
+# Fix permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
