@@ -25,9 +25,13 @@
         </div>
         <div class="navbar-menu" id="navMenu">
             <div class="navbar-start">
-                <a href="{{ route('home') }}"
-                   class="navbar-item {{ Request::route()->getName() === 'home' ? "is-active" : "" }}">
-                    Home
+                <a href="{{ route('dashboard') }}"
+                   class="navbar-item {{ Request::route()->getName() === 'dashboard' ? "is-active" : "" }}">
+                    Dashboard
+                </a>
+                <a href="{{ route('articles.index') }}"
+                   class="navbar-item {{ Request::route()->getName() === 'articles.index' ? "is-active" : "" }}">
+                    Articles
                 </a>
             </div>
         </div>
@@ -113,7 +117,7 @@
 
             <div class="column has-text-centered">
                 <div>
-                    <a href="/" class="link">Home</a>
+                    <a href="/" class="link">Dashboard</a>
                 </div>
             </div>
 
