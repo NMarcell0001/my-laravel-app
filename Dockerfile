@@ -14,6 +14,7 @@ RUN a2enmod rewrite
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 ENV NODE_ENV=production
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Fix Apache configs for new DocumentRoot
 RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
@@ -21,16 +22,16 @@ RUN sed -ri -e "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-av
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
-
+# Copy Composer binary from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-
-# Copy the rest of the app
+# Copy all files before running composer install to ensure artisan is present
 COPY . .
 
-# Install node packages & build assets
+# Install PHP dependencies via Composer
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+# Install node packages and build assets
 RUN npm ci --omit=dev && npm run build || (cat vite.config.js && echo "Vite build failed" && exit 1)
 
 # Prepare Laravel cache directories & cache config/routes/views
