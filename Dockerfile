@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install dependencies and PHP extensions
+# Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev zip curl libpq-dev libonig-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_pgsql zip bcmath xml \
@@ -27,23 +27,21 @@ WORKDIR /var/www/html
 # Copy Composer binary from official image
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy application files
+# Copy app files early to run composer & npm commands
 COPY . .
 
-# Install PHP dependencies with Composer
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 # Install node modules and build assets
-RUN npm ci --omit=dev && npm run build
+RUN npm install && npm run build
 
-# Prepare Laravel cache directories & cache config/routes/views
-RUN mkdir -p storage/framework/cache data bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache \
-    && php artisan config:cache \
+# Cache Laravel config/routes/views
+RUN php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache
 
-# Fix permissions for storage and bootstrap cache (redundant if done above, but safe)
+# Fix permissions for storage and bootstrap cache
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 EXPOSE 80
