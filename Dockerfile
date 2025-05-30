@@ -28,7 +28,6 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Copy dependency files first
 COPY composer.json composer.lock package.json package-lock.json ./
 
-
 # Now copy the rest of the app (includes artisan, config, routes, etc.)
 COPY . .
 
