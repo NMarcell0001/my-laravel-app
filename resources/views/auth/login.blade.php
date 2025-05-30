@@ -44,7 +44,4 @@
             </x-primary-button>
         </div>
     </form>
-    <p>
-        use asd@gmail.com with password 12345678. If name required, use asd
-    </p>
 </x-guest-layout>

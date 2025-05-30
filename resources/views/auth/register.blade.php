@@ -49,7 +49,4 @@
             </x-primary-button>
         </div>
     </form>
-    <p>
-        use asd, asd@gmail.com with password 12345678 for registering, and AFTER that, logging in
-    </p>
 </x-guest-layout>
