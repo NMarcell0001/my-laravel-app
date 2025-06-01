@@ -32,9 +32,8 @@ COPY composer.json composer.lock package.json package-lock.json ./
 COPY . .
 
 # Install PHP dependencies (artisan is now present)
-RUN composer install # --no-dev --optimize-autoloader --no-interaction --prefer-dist
+RUN composer install
 
-RUN rm -rf node_modules package-lock.json
 RUN npm install
 RUN npm run build
 
