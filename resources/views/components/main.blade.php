@@ -27,7 +27,7 @@
                     <div class="navbar-start">
                         <a href="{{ route('dashboard') }}"
                            class="navbar-item {{ request()->route()->getName() === 'dashboard' ? "is-active" : "" }}">
-                            Home
+                            Dashboard
                         </a>
                         <a href="{{ route('articles.index') }}"
                            class="navbar-item {{ request()->route()->getName() === 'articles.index' ? "is-active" : "" }}">
