@@ -1,53 +1,45 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}"
-          x-data="{
-              name: '{{ old('name') }}',
-              email: '{{ old('email') }}',
-              password: '',
-              password_confirmation: '',
-              isFormValid() {
-                  const isNameValid = this.name && this.name.length > 0;
-                  const isEmailValid = this.email && this.email.includes('@') && this.email.indexOf('@') > 0 && this.email.indexOf('@') < (this.email.length - 1);
-                  const isPasswordMinLength = this.password && this.password.length >= 8;
-                  const doPasswordsMatch = this.password && this.password_confirmation && (this.password === this.password_confirmation);
-                  return isNameValid && isEmailValid && isPasswordMinLength && doPasswordsMatch;
-              }
-          }"
-    >
+    <form method="POST" action="{{ route('register') }}">
         @csrf
 
+        <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" x-model="name" required autofocus autocomplete="name" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
+        <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" x-model="email" required autocomplete="username" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
+
             <x-text-input id="password" class="block mt-1 w-full"
-                          type="password"
-                          name="password"
-                          required autocomplete="new-password"
-                          minlength="8"
-                          x-model="password" />
+                            type="password"
+                            name="password"
+                            required autocomplete="new-password"
+                            minlength="8" />
+
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
-            <p>
-                Password must be at least 8 characters long.
-            </p>
+        <p>
+            Password must be at least 8 characters long.
+        </p>
         </div>
 
+        <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+
             <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                          type="password"
-                          name="password_confirmation" required autocomplete="new-password"
-                          x-model="password_confirmation" />
+                            type="password"
+                            name="password_confirmation" required autocomplete="new-password" />
+
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
@@ -56,8 +48,7 @@
                 {{ __('Already registered?') }}
             </a>
 
-            <x-primary-button class="ms-4"
-                              :disabled="!isFormValid()">
+            <x-primary-button class="ms-4">
                 {{ __('Register') }}
             </x-primary-button>
         </div>
