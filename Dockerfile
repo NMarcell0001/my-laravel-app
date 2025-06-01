@@ -35,14 +35,8 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
 RUN rm -rf node_modules package-lock.json
-RUN npm cache clean --force
 RUN npm install
 RUN npm run build
-
-# Cache Laravel config/routes/views
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
 
 # Fix permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
