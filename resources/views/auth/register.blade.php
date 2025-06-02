@@ -1,7 +1,11 @@
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}">
         @csrf
-
+        <div>
+            <p class="text-xl text-red-500 text-bold mt-1">
+                All fields are necessary to fill in!
+            </p>
+        </div>
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')"/>
@@ -59,9 +63,6 @@
             </x-primary-button>
         </div>
 
-        <p class="text-sm text-red-500 text-bold mt-1">
-            All fields are necessary to fill in!
-        </p>
     </form>
 
 </x-guest-layout>
