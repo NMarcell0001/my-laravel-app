@@ -58,6 +58,10 @@
                 {{ __('Register') }}
             </x-primary-button>
         </div>
+
+        <p class="text-sm text-red-500 text-bold mt-1">
+            All fields are necessary to fill in!
+        </p>
     </form>
 
 </x-guest-layout>
