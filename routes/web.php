@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ArticleController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -38,11 +39,14 @@ Route::get('/debug-user', function () {
 Route::get('/make-me-admin', function () {
     if (auth()->check()) {
         $user = auth()->user();
-        $user->is_admin = true;
-        $user->save();
-        return 'User updated to admin.';
+
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update(['is_admin' => true]);
+
+        return 'User updated to admin (via DB).';
     }
-    return 'Not logged in';
+    return 'Not logged in.';
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
