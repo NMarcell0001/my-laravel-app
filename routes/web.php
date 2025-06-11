@@ -14,7 +14,6 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
 
-    // Define dashboard route here!
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
