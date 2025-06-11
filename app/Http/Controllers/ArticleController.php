@@ -22,6 +22,10 @@ class ArticleController extends Controller
      */
     public function create()
     {
+        if (!auth()->user()->is_admin) {
+            abort(403);
+        }
+
         return view('articles.create');
     }
 
@@ -30,12 +34,16 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->is_admin) {
+            abort(403);
+        }
+
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string'
         ]);
 
-        $article = Article::create($validatedData);
+        Article::create($validatedData);
 
         return redirect()->route('articles.index')->with('success', 'Article created!');
     }
@@ -55,6 +63,10 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
+        if (!auth()->user()->is_admin) {
+            abort(403);
+        }
+
         return view('articles.edit', compact('article'));
     }
 
@@ -63,11 +75,17 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
+        if (!auth()->user()->is_admin) {
+            abort(403);
+        }
+
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'body' => 'required|string']);
+            'body' => 'required|string'
+        ]);
 
         $article->update($validatedData);
+
         return redirect()->route('articles.index')->with('success', 'Article updated!');
     }
 
@@ -76,8 +94,12 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
+        if (!auth()->user()->is_admin) {
+            abort(403);
+        }
+
         $article->delete();
+
         return redirect()->route('articles.index')->with('success', 'Article deleted!');
     }
-
 }
