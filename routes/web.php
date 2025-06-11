@@ -35,19 +35,6 @@ Route::get('/debug-user', function () {
     return 'Not logged in';
 });
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-
-Route::get('/create-temp-admin', function () {
-    User::create([
-        'name' => 'Temporary Admin',
-        'email' => 'tempadmin@example.com',
-        'password' => Hash::make('password123'),
-        'is_admin' => true,
-    ]);
-    return 'Temporary admin user created!';
-});
-
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('articles/create', [ArticleController::class, 'create'])->name('articles.create');
     Route::post('articles', [ArticleController::class, 'store'])->name('articles.store');
