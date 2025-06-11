@@ -43,4 +43,29 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });
 
+Route::get('/run-admin-setup', function (Request $request) {
+    // IMPORTANT: Change 'YOUR_SECRET_KEY_HERE' to a strong, random string!
+    // This provides a minimal level of security.
+    $secretKey = env('ADMIN_SETUP_SECRET', 'a_very_insecure_default_key'); // Use an env variable for better security
+    // For this temporary fix, we'll allow a query parameter or use the default if env not set
+    if ($request->query('key') !== $secretKey) {
+        abort(403, 'Unauthorized access to setup route.');
+    }
+
+    try {
+        // Run the UserSeeder to add the new admin user (firstOrCreate prevents duplicates)
+        Artisan::call('db:seed', ['--class' => 'UserSeeder']);
+        echo "UserSeeder executed successfully.<br>";
+
+        // Clear all Laravel caches
+        Artisan::call('optimize:clear');
+        echo "Application caches cleared.<br>";
+
+        return "Admin setup complete. Please log out and log back in.";
+
+    } catch (\Exception $e) {
+        return "An error occurred: " . $e->getMessage();
+    }
+});
+
 require __DIR__ . '/auth.php';
