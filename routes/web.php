@@ -33,4 +33,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });
 
+Route::get('/reset-seed-db', function () {
+    Artisan::call('migrate:fresh'); // drops all tables and migrates fresh
+    Artisan::call('db:seed');       // runs seeders
+
+    return 'Database reset and seeded!';
+});
+
 require __DIR__ . '/auth.php';

@@ -53,14 +53,5 @@
                 </div>
             </article>
         @endforeach
-        @auth
-            @if(auth()->user()->is_admin)
-                <div>Admin confirmed</div>
-            @else
-                <div>Logged in but NOT admin</div>
-            @endif
-        @else
-            <div>Not logged in</div>
-        @endauth
     </div>
 </x-main>
