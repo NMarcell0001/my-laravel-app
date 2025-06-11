@@ -25,6 +25,26 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('articles', ArticleController::class)->only(['index', 'show']);
 
+Route::get('/debug-user', function () {
+    if (auth()->check()) {
+        return [
+            'email' => auth()->user()->email,
+            'is_admin' => auth()->user()->is_admin,
+        ];
+    }
+    return 'Not logged in';
+});
+
+Route::get('/make-me-admin', function () {
+    if (auth()->check()) {
+        $user = auth()->user();
+        $user->is_admin = true;
+        $user->save();
+        return 'User updated to admin.';
+    }
+    return 'Not logged in';
+});
+
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('articles/create', [ArticleController::class, 'create'])->name('articles.create');
     Route::post('articles', [ArticleController::class, 'store'])->name('articles.store');
