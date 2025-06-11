@@ -4,7 +4,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ArticleController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -36,17 +35,17 @@ Route::get('/debug-user', function () {
     return 'Not logged in';
 });
 
-Route::get('/make-me-admin', function () {
-    if (auth()->check()) {
-        $user = auth()->user();
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
-        DB::table('users')
-            ->where('id', $user->id)
-            ->update(['is_admin' => true]);
-
-        return 'User updated to admin (via DB).';
-    }
-    return 'Not logged in.';
+Route::get('/create-temp-admin', function () {
+    User::create([
+        'name' => 'Temporary Admin',
+        'email' => 'tempadmin@example.com',
+        'password' => Hash::make('password123'),
+        'is_admin' => true,
+    ]);
+    return 'Temporary admin user created!';
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
