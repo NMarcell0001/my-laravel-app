@@ -41,7 +41,14 @@ RUN npm run build
 RUN php artisan optimize:clear
 
 RUN php artisan migrate:fresh --seed --force
-# Fix permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
+RUN chmod -R 775 vendor # Ensure vendor dir and its contents are readable
+RUN chown -R www-data:www-data storage bootstrap/cache vendor # Re-chown after chmod
+
+# --- PHP OpCache Clearing ---
+# Clear PHP's OpCache (if enabled) to ensure no old bytecode is cached
+RUN if [ -f /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini ]; then \
+    php -r "opcache_reset();"; \
+    fi
 
 EXPOSE 80

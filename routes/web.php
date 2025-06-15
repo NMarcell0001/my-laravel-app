@@ -43,8 +43,4 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::resource('articles', ArticleController::class)->only(['index', 'show']);
 
-Route::get('/test-admin', function () {
-    return 'You passed the admin middleware!';
-})->middleware('admin');
-
 require __DIR__ . '/auth.php';
