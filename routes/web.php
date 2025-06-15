@@ -23,8 +23,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::resource('articles', ArticleController::class)->only(['index', 'show']);
-
 Route::get('/debug-user', function () {
     if (auth()->check()) {
         return [
@@ -42,5 +40,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });
+
+Route::resource('articles', ArticleController::class)->only(['index', 'show']);
+
 
 require __DIR__ . '/auth.php';
