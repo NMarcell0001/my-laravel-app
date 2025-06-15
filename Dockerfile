@@ -33,6 +33,7 @@ COPY . .
 
 # Install PHP dependencies (artisan is now present)
 RUN composer install
+RUN composer dump-autoload
 
 RUN npm install
 RUN npm run build
