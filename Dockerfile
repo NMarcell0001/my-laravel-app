@@ -37,6 +37,7 @@ RUN composer install
 RUN npm install
 RUN npm run build
 
+RUN php artisan optimize:clear
 # Fix permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
