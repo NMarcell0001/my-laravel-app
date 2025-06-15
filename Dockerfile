@@ -38,8 +38,8 @@ RUN npm install
 RUN npm run build
 
 RUN php artisan optimize:clear
-RUN php artisan migrate --force
-RUN php artisan db:seed --force
+
+RUN php artisan migrate:fresh --seed --force
 # Fix permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
